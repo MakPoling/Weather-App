@@ -87,8 +87,8 @@ function showWeatherData(data) {
           src="http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png"
           alt="weather icon"
           class="w-icon">
-          <div class="temp">High: ${Math.round(day.temp.day)}°F</div>
-          <div class="temp">Low: ${Math.round(day.temp.night)}°F</div>
+          <div class="temp">Day: ${Math.round(day.temp.day)}°F</div>
+          <div class="temp">Night: ${Math.round(day.temp.night)}°F</div>
           <div class="other-currents">
         <div class="other-currents">
           <div>Humidity: ${humidity}%</div>
@@ -126,3 +126,4 @@ function showWeatherData(data) {
 
   weatherForecastEl.innerHTML = weatherForecast;
 }
+
