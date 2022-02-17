@@ -6,24 +6,23 @@
 }
 
 body {
-  background: linear-gradient(to bottom, #00cece 0%, #289ce9 50%, #7a17f3 100%);
   background-size: 100vh;
   font-family: "Poppins", sans-serif;
 }
 
 .container {
-  border: 1px solid white;
+  border: 1px solid green;
   border-radius: 40px;
   margin: 100px;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.12);
   color: white;
   align-items: center;
-  box-shadow: 0px 0px 15px 3px rgba(234, 234, 234, 0.14);
+  background: linear-gradient(to bottom, #00cece 0%, #289ce9 50%, #7a17f3 100%);
+  opacity: 90%;
 }
 
 .date-container {
-  font-weight: 100;
+  font-weight: 300;
   font-size: 20px;
   float: right;
   margin-top: -10px;
@@ -36,7 +35,7 @@ body {
 
 .location-container {
   float: left;
-  font-weight: 100;
+  font-weight: 300;
   font-size: 20px;
   margin-top: 5px;
 }
@@ -55,7 +54,7 @@ body {
 
 .today .day {
   text-align: center;
-  font-weight: 200;
+  font-weight: 400;
   font-size: 30px;
 }
 
@@ -68,14 +67,14 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  font-weight: 100;
-  font-size: 15px;
+  font-weight: 300;
+  font-size: 16px;
   margin: 5px;
 }
 
 #sunrise-sunset {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   text-align: center;
   align-content: center;
   margin: 0 auto;
