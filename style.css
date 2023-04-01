@@ -1,13 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;700&display=swap");
+
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  margin: 0 auto;
 }
 
 body {
-  background-size: 100vh;
   font-family: "Poppins", sans-serif;
+  background-color: #121212;
 }
 
 .container {
@@ -17,7 +17,7 @@ body {
   padding: 20px;
   color: white;
   align-items: center;
-  background: linear-gradient(to bottom, #00cece 0%, #289ce9 50%, #7a17f3 100%);
+  background: linear-gradient(to bottom, #7a17f3 0%, #289ce9 75%, #00cece 100%);
   opacity: 90%;
 }
 
@@ -38,6 +38,12 @@ body {
   font-weight: 300;
   font-size: 20px;
   margin-top: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.location {
+  margin-left: 10px;
 }
 
 .country {
@@ -152,7 +158,5 @@ body {
     font-size: 14px;
 }
 }
-
-
 
 
