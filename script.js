@@ -1,122 +1,108 @@
 "use strict";
 
-const timeEl = document.getElementById("time");
-const dateEl = document.getElementById("date");
-const currentLocation = document.getElementById("location");
-const todayWeatherEl = document.getElementById("current-weather");
-const currentTempEl = document.getElementById("current-temp");
-const otherCurrentsEl = document.getElementById("other-currents");
-const weatherForecastEl = document.getElementById("weather-forecast");
+document.addEventListener("DOMContentLoaded", () => {
+  const timeEl = document.getElementById("time");
+  const ampmEl = document.getElementById("am-pm");
+  const dateEl = document.getElementById("date");
+  const locationEl = document.getElementById("location");
 
-const days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+  const currentConditionsEl = document.querySelector(".current-conditions");
+  const currentTempEl = document.querySelector(".current-temp");
+  const highTempEl = document.querySelector(".high-low .temp:nth-child(1)");
+  const lowTempEl = document.querySelector(".high-low .temp:nth-child(2)");
+  const humidityEl = document.querySelector("#other-currents > .other-currents:nth-child(1) > div");
+  const pressureEl = document.querySelector("#other-currents > .other-currents:nth-child(2) > div");
+  const windSpeedEl = document.querySelector("#other-currents > .other-currents:nth-child(3) > div");
+  const sunriseEl = document.querySelector("#sunrise-sunset > .other-currents:nth-child(1) > div");
+  const sunsetEl = document.querySelector("#sunrise-sunset > .other-currents:nth-child(2) > div");
 
-const API_KEY = "35e42fd6d2cc72503848c57f19a86792";
+  const forecastItems = document.querySelectorAll(".weather-forecast-item");
 
-// Time and Date
-setInterval(() => {
-  const time = new Date();
-  const month = time.getMonth();
-  const date = time.getDate();
-  const day = time.getDay();
-  let hour = time.getHours();
-  const ampm = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12 || 12; // convert 0 to 12
-  const minutes = time.getMinutes();
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
 
-  timeEl.innerHTML = hour + ":" + (minutes < 10 ? "0" : "") + minutes + " " + ampm;
+  // Time update
+  setInterval(() => {
+    const now = new Date();
+    let hour = now.getHours();
+    const ampm = hour >= 12 ? "pm" : "am";
+    hour = hour % 12 || 12;
+    const minutes = String(now.getMinutes()).padStart(2, "0");
 
-  dateEl.innerHTML = days[day] + ", " + months[month] + " " + date;
-}, 1000);
+    timeEl.childNodes[0].nodeValue = `${hour}:${minutes} `;
+    ampmEl.textContent = ampm;
+    dateEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  }, 1000);
 
-// Coordinates/Location
-getWeatherData();
-function getWeatherData() {
-  navigator.geolocation.getCurrentPosition((success) => {
-    let { latitude, longitude } = success.coords;
-
-    fetch(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=hourly,minutely&units=imperial&appid=${API_KEY}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        showWeatherData(data);
-      });
-  });
-}
-
-function showWeatherData(data) {
-  let { humidity, pressure, sunrise, sunset, wind_speed } = data.current;
-
-  currentLocation.innerHTML = " Current Location";
-
-  let weatherForecast = "";
-  data.daily.forEach((day, idx) => {
-    if (idx == 0) {
-      todayWeatherEl.innerHTML = `
-        <div class="today">
-          <div class="day">Today</div>
-          <img
-          src="http://openweathermap.org/img/wn/${day.weather[0].icon}.png"
-          alt="weather icon"
-          class="w-icon">
-          <div class="temp">High: ${Math.round(day.temp.max)}°F</div>
-          <div class="temp">Low: ${Math.round(day.temp.min)}°F</div>
-          <div class="other-currents">
-            <div>Humidity: ${humidity}%</div>
-          </div>
-          <div class="other-currents">
-            <div>Pressure: ${pressure}</div>
-          </div>
-          <div class="other-currents">
-            <div>Wind Speed: ${Math.round(wind_speed)} mph</div>
-          </div>
-          <div class="other-currents" id="sunrise-sunset">
-            <div class="other-currents">
-              <div>Sunrise: ${moment.unix(sunrise).format("h:mm A")}</div>
-            </div>
-            <div class="other-currents">
-              <div>Sunset: ${moment.unix(sunset).format("h:mm A")}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    } else {
-      weatherForecast += `
-        <div class="weather-forecast-item">
-          <div class="day">${window.moment(day.dt * 1000).format("ddd")}</div>
-          <img
-          src="http://openweathermap.org/img/wn/${day.weather[0].icon}.png"
-          alt="weather icon"
-          class="w-icon">
-          <div class="temp">High: ${Math.round(day.temp.max)}°F</div>
-          <div class="temp">Low: ${Math.round(day.temp.min)}°F</div>
-        </div>
-      `;
+  function getWeatherData() {
+    if (!navigator.geolocation) {
+      locationEl.textContent = "Geolocation not supported";
+      return;
     }
-  });
 
-  weatherForecastEl.innerHTML = weatherForecast;
-}
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        fetch(`/api/location?lat=${latitude}&lon=${longitude}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data[0]) {
+              const { name, state, country } = data[0];
+              locationEl.textContent = `${name}, ${state || country}`;
+            }
+          })
+          .catch(() => locationEl.textContent = "Location unavailable");
+
+        fetch(`/api/weather?lat=${latitude}&lon=${longitude}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.current && data.daily) {
+              updateTodayWeather(data.current, data.daily[0]);
+              updateForecast(data.daily.slice(1, 7));
+            }
+          })
+          .catch(() => console.error("Weather fetch failed"));
+      },
+      () => {
+        locationEl.textContent = "Defaulting to New York, NY";
+        fetch(`/api/weather?lat=40.7128&lon=-74.0060`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.current && data.daily) {
+              updateTodayWeather(data.current, data.daily[0]);
+              updateForecast(data.daily.slice(1, 7));
+            }
+          });
+      }
+    );
+  }
+
+  function updateTodayWeather(current, today) {
+    currentConditionsEl.textContent = current.weather[0].description.replace(/\b\w/g, c => c.toUpperCase());
+    currentTempEl.textContent = `${Math.round(current.temp)}° F`;
+    highTempEl.textContent = `High: ${Math.round(today.temp.max)}° F`;
+    lowTempEl.textContent = `Low: ${Math.round(today.temp.min)}° F`;
+    humidityEl.textContent = `Humidity: ${current.humidity}%`;
+    pressureEl.textContent = `Pressure: ${current.pressure} hPa`;
+    windSpeedEl.textContent = `Wind Speed: ${Math.round(current.wind_speed)} mph`;
+    sunriseEl.textContent = `Sunrise: ${moment.unix(current.sunrise).format("h:mm a")}`;
+    sunsetEl.textContent = `Sunset: ${moment.unix(current.sunset).format("h:mm a")}`;
+  }
+
+  function updateForecast(daily) {
+    daily.forEach((day, i) => {
+      if (forecastItems[i]) {
+        forecastItems[i].querySelector(".day").textContent = moment.unix(day.dt).format("dddd");
+        forecastItems[i].querySelector(".w-icon").src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+        forecastItems[i].querySelector(".w-icon").alt = day.weather[0].description;
+        const temps = forecastItems[i].querySelectorAll(".temp");
+        temps[0].textContent = `High: ${Math.round(day.temp.max)}° F`;
+        temps[1].textContent = `Low: ${Math.round(day.temp.min)}° F`;
+      }
+    });
+  }
+
+  getWeatherData();
+});
